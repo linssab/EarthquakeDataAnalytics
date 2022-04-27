@@ -1,8 +1,13 @@
 
-ORACLE_CLIENT_PATH = r"C:\OracleLiteClient"
-DATABASE_DSN = r"192.168.1.6:1521/XE"
-USER = r"sergio"
+ORACLE_CLIENT_PATH = r"C:\instantclient_21_3"
+DATABASE_DSN = r"localhost:1521/XE"
+USER = r"earthquake_manager"
 PASSWORD = r"admin"
 TRIGGER = False
+NIFI = False
+REFRESH_RATE_NO_NIFI = 600 #seconds
+LOG_LEVEL = 10
+
 global NUMBER_OF_RECORDS
 NUMBER_OF_RECORDS = 0
+EVENT_DELTA = 0

@@ -1,3 +1,6 @@
+
+CONNECT earthquake_manager/admin
+
 DROP TABLE
 EARTHQUAKES;
 
@@ -24,23 +27,8 @@ CREATE TABLE
         magNst VARCHAR(24),
         status VARCHAR(100),
         locationSource VARCHAR(100),
-        magSource VARCHAR(100)
+        magSource VARCHAR(100),
+        PRIMARY KEY (id)
 );
 
-SELECT
-    count(*)
-FROM
-    EARTHQUAKES;
-
-SELECT * FROM EARTHQUAKES;
-
-SELECT
-    e.type, e.mag, e.time, e.place
-FROM
-    EARTHQUAKES e
-WHERE
-    e.status = 'reviewed'
-AND
-    e.time 
-LIKE 
-    '2022-04-08%';
+COMMIT;

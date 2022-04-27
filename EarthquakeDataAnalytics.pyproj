@@ -21,6 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Engine\DataCollector.py" />
     <Compile Include="Engine\DataObject.py" />
     <Compile Include="Engine\__init__.py" />
     <Compile Include="shared\EnvironmentVariables.py" />
@@ -30,13 +31,16 @@
     <Compile Include="Engine\MapView.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Engine\map.png" />
     <Content Include="flow\USGS-DATA-FLOW.xml" />
+    <Content Include="Pipfile" />
     <Content Include="requirements.txt" />
+    <Content Include="setup_database.ps1" />
     <Content Include="shared\icon.ico" />
     <Content Include="README.md" />
-    <Content Include="sqls\crea_earthquakes.sql" />
-    <Content Include="sqls\crea_utente.sql" />
+    <Content Include="sqls\3_create_earthquakes_table.sql" />
+    <Content Include="sqls\1_create_user.sql" />
+    <Content Include="sqls\2_log_user.sh" />
+    <Content Include="setup_database.sh" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="flow\" />

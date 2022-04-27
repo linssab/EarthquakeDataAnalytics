@@ -81,6 +81,7 @@ class MapView:
         self.plot.set_aspect('equal')
 
         self.master.after(100,self.master.attributes,"-alpha",1.0)
+        self.master.after( 200, self.master.iconbitmap( os.path.join( os.path.join( os.path.dirname(__file__), os.pardir ), "shared", "icon.ico" ) ) )
         self.__draw_image()
         self.canvas.draw()
     
@@ -101,7 +102,8 @@ class MapView:
         x = self.geoDataObject.data["LONGITUDE"]
         y = self.geoDataObject.data["LATITUDE"]
         z = self.geoDataObject.data["MAG"]
-        vmax = max(z)
+        if len(z) > 0: vmax = max(z)
+        else: vmax = 1
         vmin = 0
         self.plot.scatter(x, y, s=20*z, c=z, alpha=0.6, cmap='hot_r', vmin=vmin, vmax=vmax)
         self.plot.set_xlim([-180, 180])
@@ -115,4 +117,5 @@ class MapView:
     def __wipe_plot(self):
         self.plot.clear()
         self.figure.clf()
+        self.master.update_idletasks()
         self.master.destroy()

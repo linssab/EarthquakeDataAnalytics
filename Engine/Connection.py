@@ -1,4 +1,7 @@
 
+import logging
+logger = logging.getLogger(__name__)
+
 import shared.EnvironmentVariables as ev
 import cx_Oracle
 import pandas as pd
@@ -11,17 +14,22 @@ class Connection:
         self.cursor = None
         return
         
-    def open_connection(self, user: str, password: str, dbPath: str):
-        self.connection = cx_Oracle.connect(
-            user=user, 
-            password=password,
-            dsn=dbPath)
-        self.cursor = self.connection.cursor()
-        ev.NUMBER_OF_RECORDS = self.count_records()
-        return None
+    def open_connection(self, user: str, password: str, dbPath: str) -> int:
+        try: 
+            self.connection = cx_Oracle.connect(
+                user=user, 
+                password=password,
+                dsn=dbPath)
+            self.cursor = self.connection.cursor()
+            logging.debug(f"Conected to {user}/{password}@dbPath")
+            ev.NUMBER_OF_RECORDS = self.count_records()
+        except Exception as e: 
+            logging.warning(f"Failed to connect to {user}/{password}@dbPath")
+            return 0
+        return 1
 
     def count_records(self) -> int:
-        """ Return an integer with the number of recors in the connection database """
+        """ Return an integer with the number of records in the connection database """
         sql = "SELECT count(*) FROM EARTHQUAKES e WHERE e.type='earthquake'"
         self.cursor.execute( sql )
         return [row for row in self.cursor][0][0]
@@ -40,10 +48,22 @@ class Connection:
         self.cursor.execute( query )
         return [row for row in self.cursor]
 
+    def commit(self) -> bool:
+        try: self.connection.commit()
+        except: return 0
+        return 1
+
+    def execute_query(self, query: str) -> bool:
+        try: psql.execute( query, con=self.connection )
+        except: return 0
+        return 1
+
     def sql_queryl(self, query: str) -> pd.DataFrame:
         """ returns a Pandas dataframe object """
         results = pd.DataFrame()
         try: 
             results = psql.read_sql( query , con=self.connection )
-        except Exception as e: print(f"{e}")
+        except Exception as e: 
+            print(f"{e}")
+            logging.error(f"{e}")
         return results

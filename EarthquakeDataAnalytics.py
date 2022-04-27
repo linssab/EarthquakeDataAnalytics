@@ -1,17 +1,28 @@
 
+import logging
 import shared.EnvironmentVariables as ev
+logging.basicConfig(
+    filename="logfile.log",
+    filemode="w+",
+    level=ev.LOG_LEVEL, 
+    format='%(asctime)s:%(funcName)s:%(lineno)d - %(message)s', 
+    datefmt='%d-%b-%y %H:%M:%S')
+logging.info( "*" * 10 + " Program start " + "*" * 10 )
+
+logging.debug("Loading internal modules...")
 from Engine.DataObject import DataObject, geoDataObject
 from Engine.EventNumberMonitor import EventNumberMonitor
 from Engine.MapView import MapView
+from Engine.DataCollector import DataFetchDaemon
+logging.debug("Done")
 
 import matplotlib.pyplot as plt
 from datetime import datetime
 import os, sys
-import sklearn
 
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
-
 
 def make_query( start: str, end: str) -> str:
     return \
@@ -76,6 +87,7 @@ class GUI:
         self.footerStatusLabelDaily = ttk.Label( self.footerLeftPane, text="Events recorded today: " )
         self.footerStatusCounterDaily = ttk.Label( self.footerLeftPane, textvariable=self.earthquakeDailyCounter )
         self.showAllinMap = ttk.Button( self.footerRightPane, text="Display in map", command=self.__spawn_map )
+        self.clearTreeSelection = ttk.Button( self.footerRightPane, text="Clear selection", command=self.__clear_tree_selection )
 
         self.treeView = ttk.Treeview( self.treeFrame, columns=list(self.headers.keys()), show="headings" )
         for head in self.headers.keys(): 
@@ -114,7 +126,8 @@ class GUI:
         for (btn, i) in zip( self.filterButtons, range( len(self.filterButtons) ) ):
             btn.grid( row=0, column=i, padx=(10,0) )
 
-        self.showAllinMap.grid( row=0, column=self.footerRightPane.grid_size()[0]+1 )
+        self.showAllinMap.grid( row=0, column=self.footerRightPane.grid_size()[0]+1, padx=(10,0) )
+        self.clearTreeSelection.grid( row=0, column=self.footerRightPane.grid_size()[0]+1)
         
         self.master.columnconfigure( 0, weight=1 )
         self.master.rowconfigure( 1, weight=1 )
@@ -129,36 +142,60 @@ class GUI:
         self.treeView.bind( "<Double-Button-1>", self.__spawn_map )
 
         self.master.update_idletasks()
+        self.KILL = 0
         self.master.after( 1000, self.__update_clock )
         self.master.minsize( width=self.master.winfo_width(), height=self.master.winfo_height()+200 )
         self.master.after( 200, self.master.iconbitmap( os.path.join( os.path.dirname(__file__), "shared", "icon.ico" ) ) )
 
     def __update_clock(self) -> None:
-        if ev.TRIGGER: self.__populate_with_data()
+        global clockId
+        if ev.TRIGGER: 
+            messagebox.showwarning("New events!", 
+                                   f"We have received new event(s)!")
+            self.__populate_with_data()
         self.currentTimeUtc.set(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         self.headerTimeText.update_idletasks()
-        self.master.after(1000, self.__update_clock)
+        clockId = self.master.after(1000, self.__update_clock)
 
     def __start(self) -> None:
-        self.__start_watchdog()
+        self.__start_watchdogs()
         self.master.mainloop()
 
-    def __start_watchdog(self) -> None:
-        self.eventNumberMonitor = EventNumberMonitor( )
+    def __start_watchdogs(self) -> None:
+        self.eventNumberMonitor = EventNumberMonitor()
+        if not ev.NIFI: self.dataFetcher = DataFetchDaemon()
 
     def __kill(self) -> None:
+        if not ev.NIFI: self.dataFetcher.kill()
+        self.master.after_cancel( clockId )
+        self.master.update_idletasks()
         self.master.destroy()
+        sys.exit(1)
 
     def __spawn_map(self, event=None) -> None:
-        if event is None: 
-            MapView( geoDataObject( self.dataObject.data ) )
+        idx = []
+        if event is None:
+            self.treeView.update_idletasks()
+            selectedItems = list( self.treeView.selection() )
+            if selectedItems == []: itemIds = [ self.treeView.item( item )["values"][-1] for item in self.treeView.get_children() ]
+            else: itemIds = [ self.treeView.item( iid )["values"][-1] for iid in selectedItems ]
+            for itemId in itemIds:
+                idx.append( self.dataObject.data.index[ self.dataObject.data["ID"] == itemId ][0] )
+            if idx == []: return
+            MapView( geoDataObject( self.dataObject.data.iloc[ idx, : ] ) )
         else:
             event.widget.update_idletasks()
             curItem = self.treeView.item( self.treeView.selection() )
-            if curItem["values"][-1] != "": like = curItem["values"][-1]
+            try: 
+                if curItem["values"][-1] != "": like = curItem["values"][-1]
+            except IndexError: return
             idx = self.dataObject.data.index[ self.dataObject.data["ID"] == like ].tolist()
-            print( curItem, idx, like )
+            if idx == []: return
             MapView( geoDataObject( self.dataObject.data.iloc[idx] ) )
+
+    def __clear_tree_selection(self, event=None) -> None:
+        for i in self.treeView.selection():
+            self.treeView.selection_remove( i )
 
     def __filter(self) -> None:
         head, string = self.filterValues[self.filterSelection.get()]
@@ -196,21 +233,3 @@ class GUI:
 if __name__.endswith("__main__"):
     
     GUI()
-
-    """
-    query = make_query( 
-            datetime.now().strftime('%Y-%m-%dT00:00:00'), 
-            datetime.now().strftime("%Y-%M-%DT%H:%M:%S") )
-
-    data = DataObject()
-    data.execute_sql( query )
-    
-    results = data.data
-    print( results.describe() )
-
-    results.hist(bins=50, figsize=(20,15))
-    plt.show()
-
-    results.plot(kind="scatter", x="LONGITUDE", y="LATITUDE", s=results["MAG"]*2, alpha=0.4, color="red")
-    plt.show()
-    """

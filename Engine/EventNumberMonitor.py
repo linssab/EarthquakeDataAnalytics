@@ -8,6 +8,7 @@ import time
 
 STARTING_EVENTS = ev.NUMBER_OF_RECORDS
 
+
 class EventNumberMonitor( Connection ):
 
     def __init__(self) -> None:
@@ -22,18 +23,18 @@ class EventNumberMonitor( Connection ):
             self.__start_watcher()
             return None
         if ev.NUMBER_OF_RECORDS != STARTING_EVENTS:
-            messagebox.showwarning("New events!", 
-                                   f"We have received {ev.NUMBER_OF_RECORDS - STARTING_EVENTS} new event(s)!")
             STARTING_EVENTS = ev.NUMBER_OF_RECORDS
             ev.TRIGGER = True
         else: pass
-        time.sleep(30)
+        time.sleep( 30 )
         self.__watch()
         return None
 
     def __start_watcher(self) -> None:
-        super().open_connection( ev.USER, ev.PASSWORD, ev.DATABASE_DSN )
-        self.watcher = threading.Thread( target=self.__watch )
-        self.watcher.setName("watcher")
-        self.watcher.setDaemon( True )
-        self.watcher.start()
+        self.connected = super().open_connection( ev.USER, ev.PASSWORD, ev.DATABASE_DSN )
+        if self.connected:
+            self.watcher = threading.Thread( target=self.__watch )
+            self.watcher.setName("watcher")
+            self.watcher.setDaemon( True )
+            self.watcher.start()
+        else: return

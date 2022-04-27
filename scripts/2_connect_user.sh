@@ -1,0 +1,1 @@
+sqlplus earthquake_manager/admin as SYSDBA
