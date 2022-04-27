@@ -17,9 +17,6 @@ The NiFi framework makes the ingestion of data easier and more robust.
 If you want to run the application without the NiFi server just change the 
 `NIFI` variable in `./shared/EnvironmentVariables.py` file to `False`
 
-
-<img src="" />
-
 The NiFi **server** is responsible for collecting data 
 from USGS via REST queries and digesting that information into our [Oracle database][Oracle database] constantly,
 independetly of the Python application, which in this case runs as a _shell_ to access our database.
@@ -38,8 +35,11 @@ To clone it, use the following command:
 git clone https://github.com/linssab/EarthquakeDataAnalytics
 ```
 
-I strongly advise to create a 
-Now, install all the required Python packages using the `requirements.txt` file:
+
+It is strongly recommended to create a separate Python environment now.
+
+In the new environment (or in your default Python installation) install all the required Python packages 
+using the `requirements.txt` file:
 
 ```console
 pip install -r requirements.txt
