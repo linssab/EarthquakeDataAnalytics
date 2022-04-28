@@ -654,7 +654,7 @@
             <properties>
                 <entry>
                     <key>Database Connection URL</key>
-                    <value>jdbc:oracle:thin:@192.168.1.6:1521:XE</value>
+                    <value>jdbc:oracle:thin:@localhost:1521:XE</value>
                 </entry>
                 <entry>
                     <key>Database Driver Class Name</key>
@@ -666,7 +666,7 @@
                 </entry>
                 <entry>
                     <key>Database User</key>
-                    <value>sergio</value>
+                    <value>earthquake_manager</value>
                 </entry>
                 <entry>
                     <key>Password</key>

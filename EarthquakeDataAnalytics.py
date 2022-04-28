@@ -61,6 +61,14 @@ class GUI:
             "ID":{"size":100, "minwidth":100}
             }
 
+        with open( os.path.join( os.path.dirname(__file__), "shared", "images.b" ), "r" ) as f:
+            ICO_SUCCESS = f.readline().split(":")[-1]
+            ICO_FAIL = f.readline().split(":")[-1]
+        GREEN = tk.PhotoImage( data=ICO_SUCCESS )
+        RED = tk.PhotoImage( data=ICO_FAIL )
+        self.GREEN = GREEN.subsample( 2 )
+        self.RED = RED.subsample( 2 )
+
         self.earthquakeCounter = tk.IntVar()
         self.earthquakeDailyCounter = tk.IntVar()
         self.currentTimeUtc = tk.StringVar()
@@ -79,7 +87,7 @@ class GUI:
         self.treeFrame = ttk.Frame( self.mainFrame, padding=10, width=600 )
         self.header = ttk.Frame( self.master, padding=10 )
         self.headerTimeText = ttk.Label( self.header, textvariable=self.currentTimeUtc )
-        self.footer = ttk.Frame( self.master, padding=10 )
+        self.footer = ttk.Frame( self.master, padding=15 )
         self.footerLeftPane = ttk.Frame( self.footer )
         self.footerRightPane = ttk.Frame( self.footer )
         self.footerStatusLabelTotal = ttk.Label( self.footerLeftPane, text="Number of earthquake records: " )
@@ -88,6 +96,9 @@ class GUI:
         self.footerStatusCounterDaily = ttk.Label( self.footerLeftPane, textvariable=self.earthquakeDailyCounter )
         self.showAllinMap = ttk.Button( self.footerRightPane, text="Display in map", command=self.__spawn_map )
         self.clearTreeSelection = ttk.Button( self.footerRightPane, text="Clear selection", command=self.__clear_tree_selection )
+        self.connectionStatusFrame = ttk.Frame( self.footerRightPane )
+        self.connectionStatusLight = ttk.Label( self.connectionStatusFrame, image=self.RED )
+        self.connectionStatusLabel = ttk.Label( self.connectionStatusFrame, text="Connected" )
 
         self.treeView = ttk.Treeview( self.treeFrame, columns=list(self.headers.keys()), show="headings" )
         for head in self.headers.keys(): 
@@ -102,9 +113,13 @@ class GUI:
 
         self.filterButtons = []
         for (text, value) in self.filterValues.items():
-            self.filterButtons.append( ttk.Radiobutton( self.footerRightPane, text = text, variable = self.filterSelection,
-               value = text,
-               command=self.__filter ) )
+            self.filterButtons.append( 
+                ttk.Radiobutton( self.footerRightPane, 
+                    text = text, 
+                    variable = self.filterSelection,
+                    value = text,
+                    command=self.__filter ) 
+                )
         
         self.header.grid( row=0, sticky="NEWS" )
         self.headerTimeText.grid( sticky="W" )
@@ -116,19 +131,22 @@ class GUI:
         self.treeYScroll.grid( row=0, column=1, sticky="NEWS" )
 
         self.footer.grid( row=2, sticky="NEWS" )
-        self.footerLeftPane.grid( row=0, column=0, sticky="W" )
-        self.footerRightPane.grid( row=0, column=1, sticky="E", padx=(25,0) )
+        self.footerLeftPane.grid( row=0, column=0, sticky="WE" )
+        self.footerRightPane.grid( row=0, column=1, sticky="WE", padx=(25,0) )
         self.footerStatusLabelTotal.grid( row=0, column=0, sticky="NEWS" )
         self.footerStatusCounterTotal.grid( row=0, column=1, sticky="NSW" )
         self.footerStatusLabelDaily.grid( row=1, column=0, sticky="NEWS" )
         self.footerStatusCounterDaily.grid( row=1, column=1, sticky="NEWS" )
 
         for (btn, i) in zip( self.filterButtons, range( len(self.filterButtons) ) ):
-            btn.grid( row=0, column=i, padx=(10,0) )
+            btn.grid( row=0, column=i, padx=(10,0), sticky="NEWS" )
 
-        self.showAllinMap.grid( row=0, column=self.footerRightPane.grid_size()[0]+1, padx=(10,0) )
-        self.clearTreeSelection.grid( row=0, column=self.footerRightPane.grid_size()[0]+1)
-        
+        self.showAllinMap.grid( row=0, column=self.footerRightPane.grid_size()[0]+1, padx=(10,0), sticky="NEWS" )
+        self.clearTreeSelection.grid( row=0, column=self.footerRightPane.grid_size()[0]+1, sticky="NEWS" )
+        self.connectionStatusFrame.grid( row=0, column=self.footerRightPane.grid_size()[0]+1, sticky="E" )
+        self.connectionStatusLabel.grid( row=0, column=0, sticky="E" )
+        self.connectionStatusLight.grid( row=0, column=1, sticky="E" )
+
         self.master.columnconfigure( 0, weight=1 )
         self.master.rowconfigure( 1, weight=1 )
         self.mainFrame.columnconfigure( 0, weight=1 )
@@ -137,7 +155,11 @@ class GUI:
         self.treeFrame.columnconfigure( 1, weight=0 )
         self.treeFrame.rowconfigure( 0, weight=1 )
         self.treeFrame.rowconfigure( 1, weight=0 )
-        self.footerLeftPane.columnconfigure( 1, weight=1 )
+        self.footer.columnconfigure( 0, weight=0 )
+        self.footer.columnconfigure( 1, weight=1 )
+        for col in range( self.footerRightPane.grid_size()[0]-1 ):
+            self.footerRightPane.columnconfigure( col, weight=0 )
+        self.footerRightPane.columnconfigure( self.footerRightPane.grid_size()[0]-1, weight=1 )
 
         self.treeView.bind( "<Double-Button-1>", self.__spawn_map )
 
@@ -153,6 +175,8 @@ class GUI:
             messagebox.showwarning("New events!", 
                                    f"We have received new event(s)!")
             self.__populate_with_data()
+        if ev.CONNECTED: self.connectionStatusLight.config( image=self.GREEN )
+        else: self.connectionStatusLight.config( image=self.RED )
         self.currentTimeUtc.set(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         self.headerTimeText.update_idletasks()
         clockId = self.master.after(1000, self.__update_clock)

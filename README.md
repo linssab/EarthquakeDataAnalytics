@@ -9,6 +9,10 @@ This is an application to monitor earthquake events using the USGS API.
 The data is fetched with either the Python application or with the [Apache NiFi][Apache NiFi] framework. 
 The information is persistently stored in a local [Oracle database][Oracle database] running in a Docker container.
 
+<p style="align:center; margin:auto; width:75%">
+	<img src="https://i.ibb.co/hgQFtkn/mapa.png" alt="screenshot" border="0">
+</p>
+
 The [Apache NiFi][Apache NiFi] framework is also containerized, using another Docker image 
 ([HortonWorks Data Flow sandbox] -- check for CDF deployment in the link).
 
@@ -21,6 +25,10 @@ The NiFi **server** is responsible for collecting data
 from USGS via REST queries and digesting that information into our [Oracle database][Oracle database] constantly,
 independetly of the Python application, which in this case runs as a _shell_ to access our database.
 <ins>Without NiFi, data is only collected when the Python application is running.</ins>
+
+<p style="align:center; margin:auto; width:85%">
+	<img src="https://i.ibb.co/phVFJJD/ss1.png" alt="screenshot" border="0">
+</p>
 
 In the next steps you will find out how to set up the **Python application**, the **database** and the **NiFi framework**.
 ___
@@ -49,7 +57,7 @@ pip install -r requirements.txt
 
 In the [Environment Variables][envinronmentVariables] file you need to set some parameters.
 To properly access our database, which we will create in the next steps, we must give our program a way to
-communicate to it. 
+communicate with it. 
 
 Download the [OracleClient][OracleClient] and **extract** it somewhere in your hard drive. Next, replace the
 value of the `ORACLE_CLIENT_PATH` variable in the [Environment Variables][envinronmentVariables] to math the path

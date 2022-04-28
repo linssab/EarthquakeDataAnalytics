@@ -23,8 +23,10 @@ class Connection:
             self.cursor = self.connection.cursor()
             logging.debug(f"Conected to {user}/{password}@dbPath")
             ev.NUMBER_OF_RECORDS = self.count_records()
+            ev.CONNECTED = True
         except Exception as e: 
-            logging.warning(f"Failed to connect to {user}/{password}@dbPath")
+            logging.warning(f"Failed to connect to {user}/{password}@{dbPath}")
+            ev.CONNECTED = False
             return 0
         return 1
 
