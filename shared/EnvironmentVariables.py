@@ -6,7 +6,7 @@ PASSWORD = r"admin"
 TRIGGER = False
 NIFI = False
 REFRESH_RATE_NO_NIFI = 600 #seconds
-LOG_LEVEL = 10
+LOG_LEVEL = 20
 CONNECTED = False
 
 global NUMBER_OF_RECORDS

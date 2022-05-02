@@ -1,4 +1,7 @@
 
+import logging
+logger = logging.getLogger(__name__)
+
 import shared.EnvironmentVariables as ev
 from .Connection import Connection
 import cx_Oracle
@@ -22,6 +25,7 @@ class EventNumberMonitor( Connection ):
         except cx_Oracle.DatabaseError:
             self.__start_watcher()
             return None
+        logging.debug(f"Number of records: {ev.NUMBER_OF_RECORDS}")
         if ev.NUMBER_OF_RECORDS != STARTING_EVENTS:
             STARTING_EVENTS = ev.NUMBER_OF_RECORDS
             ev.TRIGGER = True

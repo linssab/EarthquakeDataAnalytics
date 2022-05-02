@@ -24,6 +24,10 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
+def dummy():
+    print("Moo")
+    return
+
 def make_query( start: str, end: str) -> str:
     return \
         "SELECT "    +\
@@ -60,6 +64,12 @@ class GUI:
             "STATUS":{"size":125, "minwidth":80},
             "ID":{"size":100, "minwidth":100}
             }
+
+        self.menu = tk.Menu( self.master, tearoff=False )
+        self.menuFileCascade = tk.Menu( self.menu, tearoff=False )
+        self.menuFileCascade.add_command( label="Export to *.CSV", command=dummy )
+        self.menu.add_cascade( label="File", menu=self.menuFileCascade )
+        self.master.config( menu=self.menu )
 
         with open( os.path.join( os.path.dirname(__file__), "shared", "images.b" ), "r" ) as f:
             ICO_SUCCESS = f.readline().split(":")[-1]

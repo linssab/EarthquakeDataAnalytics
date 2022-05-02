@@ -56,7 +56,7 @@ class Connection:
         return 1
 
     def execute_query(self, query: str) -> bool:
-        try: psql.execute( query, con=self.connection )
+        try: self.cursor.execute( query )
         except Exception as e:
             return 0
         return 1

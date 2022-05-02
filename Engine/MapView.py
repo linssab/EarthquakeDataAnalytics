@@ -13,7 +13,6 @@ import matplotlib
 from matplotlib.figure import Figure
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
-import mplcursors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg

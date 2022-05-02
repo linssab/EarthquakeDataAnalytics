@@ -11,7 +11,6 @@ import threading
 import queue
 import cx_Oracle
 import time
-import numpy as np
 import pandas as pd
 
 
@@ -32,8 +31,8 @@ class DataFetchDaemon( Connection ):
         logging.debug(f"Making request: {rest}")
         self.data = pd.read_csv( rest )
         self.data = self.data.values.tolist()
-        logging.debug(f"ALL DATA COLLECTED (includes other than earthquakes): {len(self.data)}")
-        if self.data == []: logging.info("No data to add...")
+        logging.info(f"DATA COLLECTED (includes other than earthquakes): {len(self.data)}")
+        if self.data == []: logging.info("No new data to add...")
         self.__dump()
 
     def __dump(self) -> None:
@@ -64,7 +63,7 @@ class DataFetchDaemon( Connection ):
             self.queue.get(timeout=1)
         except queue.Empty:
             try: 
-                logging.debug("Collecting data...")
+                logging.info("Collecting data...")
                 self.__collect()
             except cx_Oracle.DatabaseError:
                 self.__start_fetcher()
@@ -75,7 +74,6 @@ class DataFetchDaemon( Connection ):
         
     def __start_fetcher(self) -> None:
         self.connected = super().open_connection( ev.USER, ev.PASSWORD, ev.DATABASE_DSN )
-        #self.__collect( daily=1 )
         logging.debug(f"Connected? {self.connected}")
         if self.connected:
             self.watcher = threading.Thread( target=self.__fetch )
