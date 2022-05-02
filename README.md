@@ -71,8 +71,12 @@ ___
 ## Setting up the Oracle Database
 
 We will be running our server with *containers*, so the first thing you must do is **install [Docker][Docker] 
-in your machine.** Just follow the installation steps reported in the link.
+in your machine.** Just follow the installation steps reported in the link. 
 
+Afterwards, run the shell script for your system, as explained below:
+
+___
+### WINDOWS
 Once properly installed, you must run the [databaseSetup.ps1][ps1] script from the application level, _i.e._ 
 open the terminal in the folder where you have cloned the repository and execute the following commands:
 
@@ -83,7 +87,14 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted -Force;
 ```PowerShell
 .\databaseSetup.ps1
 ```
-
+___
+### UNIX
+Run the [databaseSetup.sh][shell] shell script to setup the database. The script must be run from the applicaiton 
+level, _i.e._  open the terminal in the folder where you have cloned the repository and execute the following command:
+```shell
+bash databaseSetup.sh
+```
+___
 The script will take care of downloading the docker image and setting up the database for use.
 Once it is finished, the container will be running.
 ___
@@ -133,6 +144,7 @@ You no longer need to run the deploy scripts after the first time.
 [Oracle SQL Developer]: https://www.oracle.com/tools/downloads/sqldev-downloads.html
 [sqls]: https://github.com/linssab/EarthquakeDataAnalytics/tree/master/sqls
 [ps1]: https://github.com/linssab/EarthquakeDataAnalytics/tree/master/databaseSetup.ps1
+[shell]: https://github.com/linssab/EarthquakeDataAnalytics/tree/master/databaseSetup.sh
 [envinronmentVariables]: https://github.com/linssab/EarthquakeDataAnalytics/tree/master/shared/EnvironmentVariables.py
 [CDFScripts]: https://www.cloudera.com/downloads/hortonworks-sandbox/hdf.html?utm_source=mktg-tutorial
 [GitBash]: https://gitforwindows.org/
