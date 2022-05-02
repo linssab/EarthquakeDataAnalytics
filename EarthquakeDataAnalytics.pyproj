@@ -31,21 +31,20 @@
     <Compile Include="Engine\MapView.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="databaseSetup.ps1" />
     <Content Include="flow\USGS-DATA-FLOW.xml" />
-    <Content Include="Pipfile" />
     <Content Include="requirements.txt" />
-    <Content Include="setup_database.ps1" />
+    <Content Include="scripts\1_create_user.sql" />
+    <Content Include="scripts\2_connect_user.sh" />
+    <Content Include="scripts\3_create_table.sql" />
     <Content Include="shared\icon.ico" />
     <Content Include="README.md" />
-    <Content Include="sqls\3_create_earthquakes_table.sql" />
-    <Content Include="sqls\1_create_user.sql" />
-    <Content Include="sqls\2_log_user.sh" />
-    <Content Include="setup_database.sh" />
+    <Content Include="shared\images.b" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="flow\" />
     <Folder Include="Engine\" />
-    <Folder Include="sqls\" />
+    <Folder Include="scripts\" />
     <Folder Include="shared\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

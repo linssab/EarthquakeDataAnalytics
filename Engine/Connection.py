@@ -21,7 +21,7 @@ class Connection:
                 password=password,
                 dsn=dbPath)
             self.cursor = self.connection.cursor()
-            logging.debug(f"Conected to {user}/{password}@dbPath")
+            logging.debug(f"Conected to {user}/{password}@{dbPath}")
             ev.NUMBER_OF_RECORDS = self.count_records()
             ev.CONNECTED = True
         except Exception as e: 
@@ -57,7 +57,8 @@ class Connection:
 
     def execute_query(self, query: str) -> bool:
         try: psql.execute( query, con=self.connection )
-        except: return 0
+        except Exception as e:
+            return 0
         return 1
 
     def sql_queryl(self, query: str) -> pd.DataFrame:
@@ -66,6 +67,5 @@ class Connection:
         try: 
             results = psql.read_sql( query , con=self.connection )
         except Exception as e: 
-            print(f"{e}")
             logging.error(f"{e}")
         return results

@@ -165,9 +165,12 @@ class GUI:
 
         self.master.update_idletasks()
         self.KILL = 0
-        self.master.after( 1000, self.__update_clock )
+        self.master.after( 1000, self.__update_clock ) # TODO: Make it a thread
         self.master.minsize( width=self.master.winfo_width(), height=self.master.winfo_height()+200 )
         self.master.after( 200, self.master.iconbitmap( os.path.join( os.path.dirname(__file__), "shared", "icon.ico" ) ) )
+
+    def __launch_clock(self) -> None:
+        return
 
     def __update_clock(self) -> None:
         global clockId
@@ -186,8 +189,8 @@ class GUI:
         self.master.mainloop()
 
     def __start_watchdogs(self) -> None:
-        self.eventNumberMonitor = EventNumberMonitor()
         if not ev.NIFI: self.dataFetcher = DataFetchDaemon()
+        self.eventNumberMonitor = EventNumberMonitor()
 
     def __kill(self) -> None:
         if not ev.NIFI: self.dataFetcher.kill()
