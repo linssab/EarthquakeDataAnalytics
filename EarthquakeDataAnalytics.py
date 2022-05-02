@@ -14,6 +14,7 @@ from Engine.DataObject import DataObject, geoDataObject
 from Engine.EventNumberMonitor import EventNumberMonitor
 from Engine.MapView import MapView
 from Engine.DataCollector import DataFetchDaemon
+from DataIO.CsvWriter import CsvWriter
 logging.debug("Done")
 
 import matplotlib.pyplot as plt
@@ -67,7 +68,10 @@ class GUI:
 
         self.menu = tk.Menu( self.master, tearoff=False )
         self.menuFileCascade = tk.Menu( self.menu, tearoff=False )
-        self.menuFileCascade.add_command( label="Export to *.CSV", command=dummy )
+        self.menuFileCascade.add_command( label="Export to *.CSV", 
+                                         command= lambda: self.writer.write_to_disk(
+                                             self.dataObject.data.iloc[ self.__get_treeview_selection(), : ] ) 
+                                         )
         self.menu.add_cascade( label="File", menu=self.menuFileCascade )
         self.master.config( menu=self.menu )
 
@@ -196,6 +200,7 @@ class GUI:
 
     def __start(self) -> None:
         self.__start_watchdogs()
+        self.writer = CsvWriter()
         self.master.mainloop()
 
     def __start_watchdogs(self) -> None:
@@ -209,18 +214,23 @@ class GUI:
         self.master.destroy()
         sys.exit(1)
 
-    def __spawn_map(self, event=None) -> None:
+    def __get_treeview_selection(self) -> list:
         idx = []
+        self.treeView.update_idletasks()
+        selectedItems = list( self.treeView.selection() )
+        if selectedItems == []: itemIds = [ self.treeView.item( item )["values"][-1] for item in self.treeView.get_children() ]
+        else: itemIds = [ self.treeView.item( iid )["values"][-1] for iid in selectedItems ]
+        for itemId in itemIds:
+            idx.append( self.dataObject.data.index[ self.dataObject.data["ID"] == itemId ][0] )
+        return idx
+
+    def __spawn_map(self, event=None) -> None:
         if event is None:
-            self.treeView.update_idletasks()
-            selectedItems = list( self.treeView.selection() )
-            if selectedItems == []: itemIds = [ self.treeView.item( item )["values"][-1] for item in self.treeView.get_children() ]
-            else: itemIds = [ self.treeView.item( iid )["values"][-1] for iid in selectedItems ]
-            for itemId in itemIds:
-                idx.append( self.dataObject.data.index[ self.dataObject.data["ID"] == itemId ][0] )
+            idx = self.__get_treeview_selection()
             if idx == []: return
-            MapView( geoDataObject( self.dataObject.data.iloc[ idx, : ] ) )
-        else:
+            else: 
+                MapView( geoDataObject( self.dataObject.data.iloc[ idx, : ] ) )
+        else: # double-click
             event.widget.update_idletasks()
             curItem = self.treeView.item( self.treeView.selection() )
             try: 

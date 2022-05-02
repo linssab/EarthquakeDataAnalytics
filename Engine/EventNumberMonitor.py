@@ -5,7 +5,6 @@ logger = logging.getLogger(__name__)
 import shared.EnvironmentVariables as ev
 from .Connection import Connection
 import cx_Oracle
-from tkinter import messagebox
 import threading
 import time
 
