@@ -13,6 +13,7 @@ import matplotlib
 from matplotlib.figure import Figure
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+import mplcursors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -97,15 +98,16 @@ class MapView:
         else: self.master.state("zoomed")
     
     def __draw_image(self) -> None:
-        self.worldmap = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
-        self.worldmap.plot(color="lightgrey", ax=self.plot)
+        self.worldmap = gpd.read_file( gpd.datasets.get_path("naturalearth_lowres") )
+        self.worldmap.plot( color="lightgrey", ax=self.plot )        
         x = self.geoDataObject.data["LONGITUDE"]
         y = self.geoDataObject.data["LATITUDE"]
         z = self.geoDataObject.data["MAG"]
-        if len(z) > 0: vmax = max(z)
+        self.magValues = list( z )
+        if len( z ) > 0: vmax = max( z )
         else: vmax = 1
         vmin = 0
-        self.plot.scatter(x, y, s=20*z, c=z, alpha=0.6, cmap='hot_r', vmin=vmin, vmax=vmax)
+        self.scatter = self.plot.scatter(x, y, s=20*z, c=z, alpha=0.6, cmap='hot_r', vmin=vmin, vmax=vmax)
         self.plot.set_xlim([-180, 180])
         self.plot.set_ylim([-90, 90])
         self.plot.set_xlabel("Longitude")
@@ -113,6 +115,37 @@ class MapView:
         cax = divider.append_axes("right", size="5%", pad=0.05)
         self.figure.colorbar(plt.cm.ScalarMappable(norm=plt.Normalize(vmin=vmin, vmax=vmax), cmap="hot_r"), cax=cax, label="Magnitude")
         self.plot.set_title("Earthquake events")
+
+        self.annot = self.plot.annotate("", xy=(0,0), xytext=(20,20),textcoords="offset points",
+                    bbox=dict(boxstyle="round", fc="w"),
+                    arrowprops=dict(arrowstyle="->"))
+        self.annot.set_visible(False)
+
+        self.canvas.mpl_connect( "motion_notify_event", self.__hover )
+
+    def __hover(self, event="") -> None:
+        
+        def update_annot(ind):
+            pos = self.scatter.get_offsets()[ ind["ind"][0] ]
+            self.annot.xy = pos
+            labels = [ f"{self.magValues[n]:.2f}" for n in ind["ind"] ]
+            text = text = f"MAG: {' '.join( labels )}"
+            self.annot.set_text( text )
+            self.annot.get_bbox_patch().set_facecolor( self.scatter.get_facecolors()[ ind["ind"][-1] ].tolist() )
+            self.annot.get_bbox_patch().set_alpha(0.4)
+
+        vis = self.annot.get_visible()
+        if event.inaxes == self.plot:
+            cont, ind = self.scatter.contains( event )
+            if cont:
+                update_annot( ind )
+                self.annot.set_visible( True )
+                self.canvas.draw_idle()
+            else:
+                if vis:
+                    self.annot.set_visible(False)
+                    self.canvas.draw_idle()
+        return
 
     def __wipe_plot(self):
         self.plot.clear()
