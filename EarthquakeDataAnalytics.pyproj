@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>EarthquakeDataAnalytics</Name>
     <RootNamespace>EarthquakeDataAnalytics</RootNamespace>
+    <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DataIO\__init__.py" />
     <Compile Include="Engine\DataCollector.py" />
     <Compile Include="Engine\DataObject.py" />
     <Compile Include="Engine\__init__.py" />
@@ -32,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="databaseSetup.ps1" />
+    <Content Include="DataIO\CsvWriter.py" />
     <Content Include="flow\USGS-DATA-FLOW.xml" />
     <Content Include="requirements.txt" />
     <Content Include="scripts\1_create_user.sql" />
@@ -40,10 +43,12 @@
     <Content Include="shared\icon.ico" />
     <Content Include="README.md" />
     <Content Include="shared\images.b" />
+    <Content Include="databaseSetup.sh" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="flow\" />
     <Folder Include="Engine\" />
+    <Folder Include="DataIO\" />
     <Folder Include="scripts\" />
     <Folder Include="shared\" />
   </ItemGroup>

@@ -3,3 +3,4 @@ matplotlib
 numpy
 pandas
 cx_Oracle
+pyarrow

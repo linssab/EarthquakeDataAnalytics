@@ -18,13 +18,13 @@ class DataObject( Connection ):
         self.data = pd.DataFrame()
         return None
 
-    def execute_sql( self, query: str ) -> None:
+    def execute_sql( self, query: str ) -> pd.DataFrame:
         """ Executes an SQL query to the connected database. 
         Returns None if the query fails. """
         if self.connected: 
             self.data = super().sql_queryl( query )
             self.__convert_data_types()
-        return None
+        return self.data
 
     def __convert_data_types(self) -> None:   
         if hasattr( self.data, "TIME" ): self.data["TIME"] = pd.to_datetime(self.data["TIME"], infer_datetime_format=True)

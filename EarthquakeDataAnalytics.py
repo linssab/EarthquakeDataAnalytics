@@ -15,9 +15,9 @@ from Engine.EventNumberMonitor import EventNumberMonitor
 from Engine.MapView import MapView
 from Engine.DataCollector import DataFetchDaemon
 from DataIO.CsvWriter import CsvWriter
+from DataIO.Parquetmanager import ParquetManager
 logging.debug("Done")
 
-import matplotlib.pyplot as plt
 from datetime import datetime
 import os, sys
 
@@ -68,16 +68,24 @@ class GUI:
 
         self.menu = tk.Menu( self.master, tearoff=False )
         self.menuFileCascade = tk.Menu( self.menu, tearoff=False )
-        self.menuFileCascade.add_command( label="Export to *.CSV", 
+        self.menuFileCascade.add_command( label="Export view to *.CSV", 
                                          command= lambda: self.writer.write_to_disk(
                                              self.dataObject.data.iloc[ self.__get_treeview_selection(), : ] ) 
+                                         )
+        self.menuFileCascade.add_command( label="Save view as *.parquet", 
+                                         command= lambda: self.parquetManager.write_to_disk(
+                                             self.dataObject.data.iloc[ self.__get_treeview_selection(), : ] ) 
+                                         )
+        self.menuFileCascade.add_command( label="Save database as *.parquet", 
+                                         command= lambda: self.parquetManager.write_to_disk( DataObject().execute_sql("SELECT e.time, e.latitude, e.longitude, e.depth, e.mag, e.magerror, e.place, e.status, e.id FROM EARTHQUAKES e WHERE e.type = 'earthquake' ") )
                                          )
         self.menu.add_cascade( label="File", menu=self.menuFileCascade )
         self.master.config( menu=self.menu )
 
-        with open( os.path.join( os.path.dirname(__file__), "shared", "images.b" ), "r" ) as f:
-            ICO_SUCCESS = f.readline().split(":")[-1]
-            ICO_FAIL = f.readline().split(":")[-1]
+        with open( os.path.join( os.path.dirname(__file__), "shared", ".images" ), "r" ) as f:
+            ICO_SUCCESS = f.readline().split(":")[-1].replace("\n","").replace("\n","").replace("\t","").encode("ascii")
+            ICO_FAIL = f.readline().split(":")[-1].replace("\n","").replace("\n","").replace("\t","").encode("ascii")
+            
         GREEN = tk.PhotoImage( data=ICO_SUCCESS )
         RED = tk.PhotoImage( data=ICO_FAIL )
         self.GREEN = GREEN.subsample( 2 )
@@ -201,6 +209,7 @@ class GUI:
     def __start(self) -> None:
         self.__start_watchdogs()
         self.writer = CsvWriter()
+        self.parquetManager = ParquetManager()
         self.master.mainloop()
 
     def __start_watchdogs(self) -> None:

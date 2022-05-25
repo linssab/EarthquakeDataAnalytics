@@ -5,16 +5,16 @@ logger = logging.getLogger(__name__)
 import shared.EnvironmentVariables as ev
 from tkinter import filedialog, messagebox
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 import os
 
+class ParquetManager:
+	def __init__(self) -> None:
+		return
 
-class CsvWriter:
-	def __init__(self):
-		self.data = pd.DataFrame()
-
-	def write_to_disk(self, data: pd.DataFrame, event=None) -> bool:
-		self.data = data
-		path = filedialog.asksaveasfilename( defaultextension=".csv", title="Save view to CSV", filetypes=(("Comma separated values", "*.csv"),) )
+	def write_to_disk(self, df: pd.DataFrame, event=None) -> bool:
+		path = filedialog.asksaveasfilename( defaultextension=".parquet", title="Save view as parquet", filetypes=(("Parquet file", "*.parquet"),) )
 		if path != "":
 			try: os.makedirs( os.path.dirname( path ) )
 			except PermissionError as e: 
@@ -22,7 +22,8 @@ class CsvWriter:
 				return 0
 			except FileExistsError: pass
 			finally: 
-				self.data.to_csv( path, header=True )
+				table = pa.Table.from_pandas( df )
+				pq.write_table( table, path )
 				messagebox.showinfo("Saved!", f"Sucessfully saved file {path}")
 				logging.info(f"Saved {path}!")
 			return 1
