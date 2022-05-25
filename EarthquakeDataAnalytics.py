@@ -19,6 +19,7 @@ from DataIO.Parquetmanager import ParquetManager
 logging.debug("Done")
 
 from datetime import datetime
+from datetime import timedelta
 import os, sys
 
 import tkinter as tk
@@ -68,17 +69,56 @@ class GUI:
 
         self.menu = tk.Menu( self.master, tearoff=False )
         self.menuFileCascade = tk.Menu( self.menu, tearoff=False )
-        self.menuFileCascade.add_command( label="Export view to *.CSV", 
+        self.csvFileCascade = tk.Menu( self.menuFileCascade, tearoff=False )
+        self.parquetFileCascade = tk.Menu( self.menuFileCascade, tearoff=False )
+
+        self.menuFileCascade.add_cascade( label="Export as *.CSV", menu=self.csvFileCascade )
+        self.menuFileCascade.add_cascade( label="Export as Apache *.parquet", menu=self.parquetFileCascade )
+
+        #----------------------------------------------------------------------------
+
+        self.csvFileCascade.add_command( label="View ...", 
                                          command= lambda: self.writer.write_to_disk(
                                              self.dataObject.data.iloc[ self.__get_treeview_selection(), : ] ) 
                                          )
-        self.menuFileCascade.add_command( label="Save view as *.parquet", 
+        self.csvFileCascade.add_command( label="Yesterday's data ...", 
+                                         command= lambda: self.writer.write_to_disk( 
+                                             DataObject().execute_sql( make_query( 
+                                                ( datetime.now() - timedelta(days=1) ).strftime('%Y-%m-%dT00:00:00'),
+                                                ( datetime.now() - timedelta(days=1) ).strftime('%Y-%m-%dT23:59:59')
+                                                    )
+                                                )
+                                            )
+                                         )
+        self.csvFileCascade.add_command( label="All data ...", 
+                                         command= lambda: self.writer.write_to_disk(
+                                             DataObject().execute_sql("SELECT e.time, e.latitude, e.longitude, e.depth, e.mag, e.magerror, e.place, e.status, e.id FROM EARTHQUAKES e WHERE e.type = 'earthquake' ") ) 
+                                         )
+
+        #----------------------------------------------------------------------------
+
+        self.parquetFileCascade.add_command( label="View ...", 
                                          command= lambda: self.parquetManager.write_to_disk(
                                              self.dataObject.data.iloc[ self.__get_treeview_selection(), : ] ) 
                                          )
-        self.menuFileCascade.add_command( label="Save database as *.parquet", 
-                                         command= lambda: self.parquetManager.write_to_disk( DataObject().execute_sql("SELECT e.time, e.latitude, e.longitude, e.depth, e.mag, e.magerror, e.place, e.status, e.id FROM EARTHQUAKES e WHERE e.type = 'earthquake' ") )
+
+        self.parquetFileCascade.add_command( label="Yesterday's data ...", 
+                                         command= lambda: self.parquetManager.write_to_disk( 
+                                             DataObject().execute_sql( make_query( 
+                                                ( datetime.now() - timedelta(days=1) ).strftime('%Y-%m-%dT00:00:00'),
+                                                ( datetime.now() - timedelta(days=1) ).strftime('%Y-%m-%dT23:59:59')
+                                                    )
+                                                )
+                                            )
                                          )
+
+        self.parquetFileCascade.add_command( label="All data ...", 
+                                         command= lambda: self.parquetManager.write_to_disk( 
+                                             DataObject().execute_sql("SELECT e.time, e.latitude, e.longitude, e.depth, e.mag, e.magerror, e.place, e.status, e.id FROM EARTHQUAKES e WHERE e.type = 'earthquake' ") )
+                                         )
+
+        #----------------------------------------------------------------------------
+
         self.menu.add_cascade( label="File", menu=self.menuFileCascade )
         self.master.config( menu=self.menu )
 

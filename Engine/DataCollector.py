@@ -22,7 +22,8 @@ class DataFetchDaemon( Connection ):
         self.__start_fetcher()
 
     def __collect(self, daily=False) -> None:
-        #if not daily: _startTime = ( ( datetime.now() - timedelta( seconds=ev.REFRESH_RATE_NO_NIFI ) ).strftime("%d-%m-%Y %H:%M:%S") ).replace(" ","%20")
+        #if using nifi_refresh_rate:    _startTime = ( ( datetime.now() - timedelta( seconds=ev.REFRESH_RATE_NO_NIFI ) ).strftime("%d-%m-%Y %H:%M:%S") ).replace(" ","%20")
+        #to get two days ago data:      _startTime = ( ( (datetime.now() - timedelta(days=2) ).replace(hour=0,minute=0,second=0,microsecond=0) ).strftime("%d-%m-%Y %H:%M:%S") ).replace(" ","%20")
         _startTime = ( ( datetime.now().replace(hour=0,minute=0,second=0,microsecond=0) ).strftime("%d-%m-%Y %H:%M:%S") ).replace(" ","%20")
         _format = "csv"
         _endTime = ( datetime.now().strftime("%d-%m-%Y %H:%M:%S") ).replace(" ","%20")
