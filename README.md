@@ -19,7 +19,8 @@ The [Apache NiFi][Apache NiFi] framework is also containerized, using another Do
 >**NOTE**: To set up the NiFi server, you will need a machine with **AT LEAST** 32Gb of RAM, 
 The NiFi framework makes the ingestion of data easier and more robust. 
 If you want to run the application without the NiFi server just change the 
-`NIFI` variable in `./shared/EnvironmentVariables.py` file to `False`
+`NIFI` variable in `./shared/EnvironmentVariables.py` file to `False`.
+Alternatively, you can use a custom-made nifi server using a docker-compose file, which consumes significantly less resources (running on computers with 8Gb RAM, for instance). An example docker-compose file can be found [here][nifidocker].
 
 The NiFi **server** is responsible for collecting data 
 from USGS via REST queries and digesting that information into our [Oracle database][Oracle database] constantly,
@@ -149,3 +150,4 @@ You no longer need to run the deploy scripts after the first time.
 [CDFScripts]: https://www.cloudera.com/downloads/hortonworks-sandbox/hdf.html?utm_source=mktg-tutorial
 [GitBash]: https://gitforwindows.org/
 [flow]: https://github.com/linssab/EarthquakeDataAnalytics/tree/master/flow
+[nifidocker]: https://github.com/linssab/nifi-environment
