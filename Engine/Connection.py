@@ -1,8 +1,8 @@
 
 import logging
-logger = logging.getLogger(__name__)
-
 import shared.EnvironmentVariables as ev
+logger = logging.getLogger(__name__)
+print(ev.ORACLE_CLIENT_PATH)
 import cx_Oracle
 import pandas as pd
 import pandas.io.sql as psql

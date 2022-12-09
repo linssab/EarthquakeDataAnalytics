@@ -1,11 +1,11 @@
 
-ORACLE_CLIENT_PATH = r"C:\instantclient_21_3"
+ORACLE_CLIENT_PATH = r"C:\instantclient_21_7"
 DATABASE_DSN = r"localhost:1521/XE"
-USER = r"manager"
+USER = r"earthquake_manager"
 PASSWORD = r"admin"
 TRIGGER = False
-NIFI = False
-REFRESH_RATE_NO_NIFI = 600 #seconds
+NIFI = True
+REFRESH_RATE_NO_NIFI = 300 #seconds
 LOG_LEVEL = 20
 CONNECTED = False
 

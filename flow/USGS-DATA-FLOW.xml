@@ -767,7 +767,7 @@ cartella del WatchDog</label>
             </position>
             <height>49.3940315246582</height>
             <label>Salva i file CSV ricevuti sotto la 
-cartella /data/usgs-data</label>
+cartella ./collected_data/usgs-data</label>
             <style>
                 <entry>
                     <key>font-size</key>
@@ -1574,7 +1574,7 @@ cartella /data/usgs-data</label>
                 <properties>
                     <entry>
                         <key>Directory</key>
-                        <value>/data/usgs-data-digested</value>
+                        <value>./collected_data/usgs-data-digested</value>
                     </entry>
                     <entry>
                         <key>Conflict Resolution Strategy</key>
@@ -1690,7 +1690,7 @@ cartella /data/usgs-data</label>
                 <properties>
                     <entry>
                         <key>Directory</key>
-                        <value>/data/log</value>
+                        <value>./collected_data/log</value>
                     </entry>
                     <entry>
                         <key>Conflict Resolution Strategy</key>
@@ -1993,7 +1993,7 @@ cartella /data/usgs-data</label>
                 <properties>
                     <entry>
                         <key>Input Directory</key>
-                        <value>/data/usgs-data</value>
+                        <value>./collected_data/usgs-data</value>
                     </entry>
                     <entry>
                         <key>File Filter</key>
@@ -2123,7 +2123,7 @@ cartella /data/usgs-data</label>
                 <properties>
                     <entry>
                         <key>Directory</key>
-                        <value>/data/usgs-data</value>
+                        <value>./collected_data/usgs-data</value>
                     </entry>
                     <entry>
                         <key>Conflict Resolution Strategy</key>
